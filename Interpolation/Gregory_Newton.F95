@@ -1,13 +1,13 @@
 ! #####################################################
-! title: Lagrange Interpolator Polynomial
+! title: Gregory_Newton Interpolator Polynomial
 ! creation: 25 Jan 2020
 ! modification: 27 Jan 2020
 ! author: Reinaldo Junio Dias de Abreu
 ! contributors: @reinaldo,
-! description: Lagrange Interpolator Polynomial
+! description: Gregory_Newton Interpolator Polynomial
 ! #####################################################
 
-program Lagrange
+program GregoryNewton
     implicit none
     integer :: n
     double precision, allocatable, dimension(:) :: x, y
@@ -28,41 +28,45 @@ program Lagrange
     write(*,*) "Image vector: "
     read(*,*) y
 
-    call Lagrange_Polynomial(x, y, n, ent)
+    call GregoryNewton_Polynomial(x, y, n, ent)
 
     deallocate(x)
     deallocate(y)
     
-end program Lagrange
+end program GregoryNewton
 
-subroutine Lagrange_Polynomial(x, y, n, ent)
+subroutine GregoryNewton_Polynomial(x, y, n, ent)
     ! x, y - Domain and Image
     ! n    - Vectors Size
     ! ent  - Value to Interpolate
     implicit none
     integer :: n, i, j
     double precision, dimension(n) :: x, y
-    double precision :: ent
-    double precision, allocatable, dimension(:)  :: L, inter
+    double precision :: ent, r, u
+    double precision, allocatable, dimension(:)  :: inter
 
-    allocate(L(n))
     allocate(inter(n))
 
-    do i=1, n
-        L(i) = 1
-        do j = 1, n 
-            if (j /= i) then
-                L(i) = L(i) * (ent - x(j)) / (x(i)- x(j)) 
-            end if
+    do i = 1, n
+        inter(i) = y(i)
+    end do
+
+    do j = 1, n-1
+        do i = n, j+1, -1
+            inter(i) = (inter(i) - inter(i-1))
         end do
     end do
 
-    inter = L * y
+    u = (ent - x(1)) / (x(2) - x(1))
+    r = inter(n)
 
-    write(*,*) "Solution: ", sum(inter)
+    do i = n-1, 1, -1
+        r = r * (u - i + 1) / i + inter(i)
+    end do
 
-    deallocate(L)
+    write(*,*) "Solution: ", r
+
     deallocate(inter)
 
-end subroutine Lagrange_Polynomial
+end subroutine GregoryNewton_Polynomial
 

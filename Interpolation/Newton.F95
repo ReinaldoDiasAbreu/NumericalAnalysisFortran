@@ -1,13 +1,13 @@
 ! #####################################################
-! title: Lagrange Interpolator Polynomial
+! title: Newton Interpolator Polynomial
 ! creation: 25 Jan 2020
 ! modification: 27 Jan 2020
 ! author: Reinaldo Junio Dias de Abreu
 ! contributors: @reinaldo,
-! description: Lagrange Interpolator Polynomial
+! description: Newton Interpolator Polynomial
 ! #####################################################
 
-program Lagrange
+program Newton
     implicit none
     integer :: n
     double precision, allocatable, dimension(:) :: x, y
@@ -28,41 +28,43 @@ program Lagrange
     write(*,*) "Image vector: "
     read(*,*) y
 
-    call Lagrange_Polynomial(x, y, n, ent)
+    call Newton_Polynomial(x, y, n, ent)
 
     deallocate(x)
     deallocate(y)
     
-end program Lagrange
+end program Newton
 
-subroutine Lagrange_Polynomial(x, y, n, ent)
+subroutine Newton_Polynomial(x, y, n, ent)
     ! x, y - Domain and Image
     ! n    - Vectors Size
     ! ent  - Value to Interpolate
     implicit none
     integer :: n, i, j
     double precision, dimension(n) :: x, y
-    double precision :: ent
-    double precision, allocatable, dimension(:)  :: L, inter
+    double precision :: ent, r
+    double precision, allocatable, dimension(:)  :: inter
 
-    allocate(L(n))
     allocate(inter(n))
 
     do i=1, n
-        L(i) = 1
-        do j = 1, n 
-            if (j /= i) then
-                L(i) = L(i) * (ent - x(j)) / (x(i)- x(j)) 
-            end if
-        end do
+        inter(i) = y(i)
     end do
 
-    inter = L * y
+    do j=1, n-1
+        do i=n,j+1,-1
+            inter(i) = (inter(i)-inter(i-1))/(x(i)-x(i-j))
+        end do
+    end do
+        
+    r = inter(n)
+    do i=n-1,1,-1
+            r = r * (ent - x(i)) + inter(i)
+    end do
 
-    write(*,*) "Solution: ", sum(inter)
+    write(*,*) "Solution: ", r
 
-    deallocate(L)
     deallocate(inter)
 
-end subroutine Lagrange_Polynomial
+end subroutine Newton_Polynomial
 
