@@ -10,10 +10,14 @@
 program GaussianElimination
     implicit none
     integer :: i, j, m
-    double precision  :: Matrix(3,3), V(3)
+    double precision, allocatable, dimension(:,:) :: Matrix 
+    double precision, allocatable, dimension(:)   :: V
 
     write(*,*) "Order (m): "
     read(*,*) m
+
+    allocate(Matrix(m,m))
+    allocate(V(m))
 
     write(*,*) "Matrix Elements: "
     do i=1,m
@@ -24,6 +28,9 @@ program GaussianElimination
     read (*,*) V
 
     call gaussian(Matrix, m, V)
+
+    deallocate(Matrix)
+    deallocate(V)
     
 
 end program GaussianElimination
@@ -35,8 +42,13 @@ subroutine gaussian(Matrix, m, V)
 
     implicit none
     integer :: m, i, j, p, linha_pivo
-    double precision  :: V(m), Matrix(m,m), pivo, aux(m), auxv, mult
-    
+    double precision, dimension(m,m)  :: Matrix
+    double precision, dimension(m)    :: V
+    double precision :: pivo, auxv, mult
+    double precision, allocatable, dimension(:) :: aux 
+
+    allocate(aux(m))
+
     do p = 1, m-1
         pivo = Matrix(p,p)
 
@@ -74,6 +86,8 @@ subroutine gaussian(Matrix, m, V)
         V(i) = (V(i) - auxv) / Matrix(i,i)
         auxv = 0
     end do
+
+    deallocate(aux)
 
     write(*,*) "Solution: ", V
 
