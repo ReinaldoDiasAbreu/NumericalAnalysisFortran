@@ -13,7 +13,7 @@ program Euler
     double precision :: h, a, alf, b
     double precision, allocatable, dimension(:) :: x, y
     double precision, allocatable, dimension(:,:) :: M
-    logical :: l
+    character(len=100) :: l, act="write", formato = '(2(F10.3,1X))'
 
     print *, "Enter domain range: "
     read (*,*) a, b
@@ -35,16 +35,14 @@ program Euler
         x(i+1) = a + i * h
     end do
 
-    print *, "Display result? (T/F) "
+    print *, "Output file name: "
     read(*,*) l
-    print *,""
-    if(l .EQV. .TRUE.) then
-        M(:,1) = x
-        M(:,2) = y
-        do i = 1, n
-            print *, M(i,:)
-        end do  
-    end if
+
+    M(:,1) = x
+    M(:,2) = y
+    call open_file(10, l, act)
+    call write_file(10, formato, M, n)
+    call close_file(10)
 
     deallocate(x)
     deallocate(y)
@@ -60,6 +58,43 @@ program Euler
     end function func
     
 end program Euler
+
+! Auxiliary functions
+
+subroutine open_file(ref, arq, act)
+    implicit none
+    integer :: ref
+    character(len=100), intent(in) :: arq, act
+    open(unit=ref, file=arq, status='UNKNOWN', action=act)
+end subroutine open_file
+
+subroutine close_file(ref)
+    implicit none
+    integer :: ref
+    close(unit=ref)
+end subroutine close_file
+
+subroutine read_file(ref, formato, matriz, lines)
+    implicit none
+    integer :: i, ref, lines
+    character(len=100), intent(in) :: formato
+    real*8 :: matriz(10,2)
+    do i=1, lines
+        read(unit=ref, fmt=formato) matriz(i,1), matriz(i,2)
+        print *, '|', matriz(i,1), '|', matriz(i,2), '|'
+    end do
+end subroutine read_file
+
+subroutine write_file(ref, formato, matriz, lines)
+    implicit none
+    integer :: i, ref, lines
+    character(len=100), intent(in) :: formato
+    real*8 :: matriz(10,2)
+    do i=1, lines
+        write(unit=ref, fmt=formato) matriz(i, 1), matriz(i, 2)
+    end do
+end subroutine write_file
+
 
 
 
