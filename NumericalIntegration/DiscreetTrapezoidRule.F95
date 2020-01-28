@@ -1,5 +1,5 @@
 ! #####################################################
-! title: Trapezoidal rule
+! title: Discreet Trapezoid Tule
 ! creation: 28 Jan 2020
 ! modification: 28 Jan 2020
 ! author: Reinaldo Junio Dias de Abreu
