@@ -1,16 +1,16 @@
 ! #####################################################
-! title: Second Order RungeKutta
-! creation: 27 Jan 2020
+! title: Fourth Order RungeKutta
+! creation: 28 Jan 2020
 ! modification: 28 Jan 2020
 ! author: Reinaldo Junio Dias de Abreu
 ! contributors: @reinaldo,
-! description: Second Order RungeKutta method for solving ordinary differential equations
+! description: fourth-order Runge Kutta method for solving differential equation
 ! #####################################################
 
 program RungeKutta
     implicit none
     integer :: n, i
-    double precision :: h, a, alf, b, K1, K2
+    double precision :: h, a, alf, b, K1, K2, K3, K4
     double precision, allocatable, dimension(:) :: x, y, U
     double precision, allocatable, dimension(:,:) :: M
     logical :: l
@@ -32,12 +32,14 @@ program RungeKutta
     x(1) = a
     y(1) = alf
 
-    do i = 1, n-1
-        k1 = func(x(i),y(i))
-        x(i+1) = a + i*h
+    do i=1, n-1
+        k1 = func(x(i), y(i))
         U(i+1) = y(i) + h*k1
-        k2 = func(x(i+1), U(i+1))
-        y(i+1) = y(i) + (h/2)*(k1+k2)
+        x(i+1) = a + i*h
+        k2 = func(x(i)+h/2, y(i)+h*k1/2)
+        k3 = func(x(i)+h/2, y(i)+h*k2/2)
+        k4 = func(x(i)+h, y(i) + h*k3)
+        y(i+1) = y(i) + (h/6)*(k1+2*k2+2*k3+k4)
     end do
 
     print *, "Display result? (T/F) "
@@ -62,7 +64,8 @@ program RungeKutta
         implicit none
         double precision, intent(in) :: x, y
         ! Differential equation with Y'(x) isolated
-        r = cos(x)      
+        ! Exemple: Y'(x) = cos(x)
+        r = cos(x)
     end function func
     
 end program RungeKutta
