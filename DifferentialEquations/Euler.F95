@@ -40,6 +40,11 @@ program Euler
 
     M(:,1) = x
     M(:,2) = y
+
+    do i = 1, n
+        write(*,*) M(i,1), " - ", M(i,2)
+    end do
+
     call open_file(10, l, act)
     call write_file(10, formato, M, n)
     call close_file(10)
