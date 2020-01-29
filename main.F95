@@ -1,20 +1,35 @@
+! Exemple file
 
 program main
     use numerical_analysis
     implicit none
-    real*8, dimension(10):: x, y
-    real*8 :: a, b, h, r
-    integer :: t
+    integer :: i, n
+    real*8 :: a, b, alf1, alf2, h
+    real*8, allocatable, dimension(:,:) :: solution
 
-    x = (/1,2,3,4,5,6,7,8,9,10/)
-    y = (/2,4,6,8,10,12,14,16,18,20/)
-    a = 1.0
-    b = 6.0
-    h = 0.01
-    t = 10
-    r = DiscreetTrapezoidal(x,y, a, b, h, t)
+    ! Solving system of differential equations
+    ! NOTE: The isolated differential equations are 
+    !       already written in the function RungeKuttaSist()
+    ! Y1'(x,y) = (1.5*y1)-0.5*y1*y2
+    ! Y2'(x,y1,y2) = (1.5*y1)-0.5*y1*y2
 
-    print *, r
+    ! Defining interval
+    a = 0
+    b = 20
+    ! Setting initial values
+    alf1 = 5
+    alf2 = 2
+    ! Setting step
+    h = 0.05
+    ! NOTE : With the step value we can calculate the output value, according to documentation
+    n = idint((b - a) / h)
+    allocate(solution(n+1,3))
+    ! Running
+    solution = RungeKuttaSist(a, b, alf1, alf2, h)
+    !Printing solution
+    do i=1, n 
+        write(*,*) solution(i,1), "|", solution(i,2), "|", solution(i,3)
+    end do
     
 end program main
 

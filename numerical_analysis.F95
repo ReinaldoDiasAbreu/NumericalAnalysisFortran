@@ -14,7 +14,7 @@ module numerical_analysis
 
     ! ------- Interpolation -------
 
-    real*8 function Lagrange(x, y, n, ent)
+    function Lagrange(x, y, n, ent)
         ! x, y - Domain and Image
         ! n    - Vectors Size
         ! ent  - Value to Interpolate
@@ -22,7 +22,7 @@ module numerical_analysis
         integer :: n, i, j
         real*8, dimension(n) :: x, y
         real*8, allocatable, dimension(:) :: L, inter
-        real*8 :: ent
+        real*8 :: ent, Lagrange
 
         allocate(L(n))
         allocate(inter(n))
@@ -42,7 +42,7 @@ module numerical_analysis
 
     end function Lagrange
 
-    real*8 function Newton(x, y, n, ent)
+    function Newton(x, y, n, ent)
         ! x, y - Domain and Image
         ! n    - Vectors Size
         ! ent  - Value to Interpolate
@@ -50,7 +50,7 @@ module numerical_analysis
         integer :: n, i, j
         real*8, dimension(n) :: x, y
         real*8, allocatable, dimension(:)  :: inter
-        real*8 :: ent, r
+        real*8 :: Newton, ent
 
         allocate(inter(n))
         
@@ -64,25 +64,23 @@ module numerical_analysis
             end do
         end do
 
-        r = inter(n)
+        Newton = inter(n)
         do i=n-1,1,-1
-            r = r * (ent - x(i)) + inter(i)
+            Newton = Newton * (ent - x(i)) + inter(i)
         end do
 
         deallocate(inter)
 
-        Newton = r
-
     end function Newton
     
-    real*8 function GregoryNewton(x, y, n, ent)
+    function GregoryNewton(x, y, n, ent)
         ! x, y - Domain and Image
         ! n    - Vectors Size
         ! ent  - Value to Interpolate
         implicit none
         integer :: n, i, j
         double precision, dimension(n) :: x, y
-        double precision :: ent, r, u
+        double precision :: ent, u, GregoryNewton
         double precision, allocatable, dimension(:)  :: inter
 
         allocate(inter(n))
@@ -98,15 +96,13 @@ module numerical_analysis
         end do
 
         u = (ent - x(1)) / (x(2) - x(1))
-        r = inter(n)
+        GregoryNewton = inter(n)
 
         do i = n-1, 1, -1
-            r = r * (u - i + 1) / i + inter(i)
+            GregoryNewton = GregoryNewton * (u - i + 1) / i + inter(i)
         end do
 
         deallocate(inter)
-
-        GregoryNewton = r
 
     end function GregoryNewton
 
@@ -171,13 +167,13 @@ module numerical_analysis
     end function GaussianElimination
 
     function Tridiagonal(a, b, c, d, order)
-        !a, b ,c  - system vectors 
-        !d        - independent values
-        !order    - system order
+        ! a, b ,c  - system vectors 
+        ! d        - independent values
+        ! order    - system order
         implicit none
         integer          :: order, i
-        double precision, dimension(order) :: a, b, c, d
-        double precision, allocatable, dimension(:) :: x
+        real*8, dimension(order) :: a, b, c, d
+        real*8, allocatable, dimension(:) :: x
         real*8, dimension(order) :: Tridiagonal
 
         allocate(x(order))
@@ -402,7 +398,7 @@ module numerical_analysis
             implicit none
             double precision, intent(in) :: x, y1, y2
             ! Differential equation with Y'(x,y) isolated
-            ! Exemple: Y'(x,y) = cos(x)
+            ! Exemple: Y'(x,y) = (1.5*y1)-0.5*y1*y2
             r = (1.5*y1)-0.5*y1*y2
         end function func1
 
@@ -410,7 +406,7 @@ module numerical_analysis
             implicit none
             double precision, intent(in) :: x, y1, y2
             ! Differential equation with Y'(x,y1,y2) isolated
-            ! Exemple: Y'(x,y1,y2) = cos(x)
+            ! Exemple: Y'(x,y1,y2) = (1.5*y1)-0.5*y1*y2
             r = (-0.5)*y2+(y2*y1)
         end function func2
 
@@ -486,12 +482,12 @@ module numerical_analysis
 
     end function Simpson
 
-    function Gaussian_Quadrature(a, b, n)
+    function GaussianQuadrature(a, b, n)
         ! a, b - Integration limits
         ! n    - Degree of integration
         implicit none
         integer :: i, n
-        real*8 :: Gaussian_Quadrature, h, h2, a, b, x(n)
+        real*8 :: GaussianQuadrature, h, h2, a, b, x(n)
         real*8 :: w1, w2, w3, t1, t2, t3, alpha, bet, x1, x2, x3
 
         h = (b-a)/n
@@ -507,7 +503,7 @@ module numerical_analysis
         t2 = 0.0
         w3=w1
         t3 = -(t1)
-        Gaussian_Quadrature = 0.0
+        GaussianQuadrature = 0.0
         
         do i=1, n
             alpha = (x(i+1) - x(i))/2.0
@@ -516,7 +512,7 @@ module numerical_analysis
             x2 = alpha*t2+bet;
             x3 = alpha*t3+bet;
             
-            Gaussian_Quadrature = Gaussian_Quadrature + ((w1*func(x1) + w2*func(x2) + w3*func(x3)) * (h/2.0))
+            GaussianQuadrature = GaussianQuadrature + ((w1*func(x1) + w2*func(x2) + w3*func(x3)) * (h/2.0))
         end do
         
         contains
@@ -528,7 +524,7 @@ module numerical_analysis
             func = 2*x
         end function func
 
-    end function Gaussian_Quadrature
+    end function GaussianQuadrature
 
     function DiscreetTrapezoidal(x, y, a, b,  h, n)
         ! x, y - domain and function image
